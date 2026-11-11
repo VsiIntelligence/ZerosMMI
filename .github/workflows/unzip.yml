@@ -1,45 +1,27 @@
-name: Unzip and Commit Files
-
+name: Unzip Uploaded Archive
 on:
   push:
     paths:
-      - '**.zip' # Triggers only when a .zip file is pushed
-  workflow_dispatch: # Allows you to run the workflow manually
+      - '*.zip' # Triggers whenever a .zip file is pushed
 
 jobs:
-  unzip-and-push:
+  unzip:
     runs-on: ubuntu-latest
-    
-    # Grants write permissions to push code back to the repository
     permissions:
       contents: write
-
     steps:
-      # 1. Check out the repository contents
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Find and extract the ZIP file
-      # Change 'archive.zip' to match your specific zip filename or path
-      - name: Extract zip file
+      - name: Extract zip and clean up
         run: |
-          ZIP_FILE="zerosvsistudio--main.zip"
-          
-          if [ -f "$ZIP_FILE" ]; then
-            echo "Extracting $ZIP_FILE..."
-            # Unzips into the current directory, overwriting existing files (-o)
-            unzip -o "$ZIP_FILE"
-          else
-            echo "Error: $ZIP_FILE not found."
-            exit 1
-          fi
+          unzip -o "*.zip"     # Extracts the contents
+          rm *.zip             # Deletes the original zip file
 
-      # 3. Commit and push the extracted files back to GitHub
-      - name: Commit and push changes
+      - name: Commit and push extracted files
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .
-          # Only commit if there are changes to avoid workflow errors
-          git diff --quiet && git diff --staged --quiet || git commit -m "Automated unzip of $ZIP_FILE"
+          git commit -m "Automated unzip from GitHub Actions" || exit 0
           git push
