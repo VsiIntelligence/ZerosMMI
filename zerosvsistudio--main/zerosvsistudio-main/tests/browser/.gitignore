@@ -1,0 +1,6 @@
+www/*.js
+www/*.css
+www/*.png
+www/*.woff2
+www/*.ttf
+out/

@@ -1,0 +1,5 @@
+project_id = "dsysbgkrvevaymlakket"
+
+[auth.third_party.firebase]
+enabled = true
+project_id = "zeros-ai-by-vsistudio"

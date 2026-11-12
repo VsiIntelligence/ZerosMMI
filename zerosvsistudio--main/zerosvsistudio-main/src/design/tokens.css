@@ -1,0 +1,41 @@
+/*
+ * Design tokens for the Settings window, the app directory, plans, notifications and dialogs.
+ * They are all prefixed --zx-, so they can never change how the rest of the app (the home screen included) looks.
+ */
+:root {
+  /* type: the app's own typeface first, with a serif for the headlines that deserve one */
+  --zx-font-ui: "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", system-ui, sans-serif;
+  --zx-font-serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --zx-font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* text, fills and lines (everything sits on the same warm graphite) */
+  --zx-text: oklch(0.965 0.004 85);
+  --zx-text-2: oklch(0.82 0.008 80);
+  --zx-text-3: oklch(0.66 0.01 80);
+  --zx-fill-1: oklch(1 0 0 / 5%);
+  --zx-fill-2: oklch(1 0 0 / 8%);
+  --zx-fill-3: oklch(1 0 0 / 13%);
+  --zx-line: oklch(1 0 0 / 9%);
+  --zx-line-strong: oklch(1 0 0 / 16%);
+  --zx-panel: oklch(0.205 0.005 70 / 94%);
+  --zx-panel-solid: oklch(0.215 0.005 70);
+  --zx-bg: oklch(0.14 0.004 70);
+  --zx-primary: oklch(0.965 0.004 85);
+  --zx-primary-ink: oklch(0.17 0.005 70);
+
+  /* the one accent, and the states */
+  --zx-accent: oklch(0.82 0.11 205);
+  --zx-accent-fill: oklch(0.82 0.11 205 / 15%);
+  --zx-accent-line: oklch(0.82 0.11 205 / 45%);
+  --zx-good: oklch(0.8 0.14 155);
+  --zx-good-fill: oklch(0.8 0.14 155 / 14%);
+  --zx-warn: oklch(0.83 0.13 80);
+  --zx-warn-fill: oklch(0.83 0.13 80 / 14%);
+  --zx-bad: oklch(0.72 0.17 25);
+  --zx-bad-fill: oklch(0.72 0.17 25 / 14%);
+
+  /* motion and depth */
+  --zx-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --zx-shadow-1: 0 1px 2px oklch(0 0 0 / 35%), 0 10px 30px oklch(0 0 0 / 30%);
+  --zx-shadow-sheet: 0 0 0 1px oklch(1 0 0 / 8%), 0 30px 90px oklch(0 0 0 / 60%), 0 4px 14px oklch(0 0 0 / 40%);
+}

@@ -1,0 +1,44 @@
+/* The luminous orb on the plan sheets, and the 404 / error pages. */
+
+/* ---------------------------------------------------------------- the orb (the one memorable thing) */
+.zx-orb { position: relative; display: inline-block; flex: none; border-radius: 50%; isolation: isolate; }
+.zx-orb::before {
+  content: ""; position: absolute; inset: -16%; z-index: -1; border-radius: 50%; opacity: 0.85;
+  background: conic-gradient(from 0deg, oklch(0.8 0.13 205), oklch(0.72 0.17 290), oklch(0.78 0.17 345), oklch(0.85 0.13 75), oklch(0.8 0.13 205));
+  filter: blur(calc(var(--orb, 40px) * 0.17)); animation: zx-spin 16s linear infinite;
+}
+.zx-orb > i { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: 50%; background: oklch(0.5 0.15 285); }
+.zx-orb > i::before {
+  content: ""; position: absolute; inset: -30%; animation: zx-spin 14s linear infinite;
+  background:
+    radial-gradient(52% 52% at 30% 28%, oklch(0.92 0.11 205), transparent 74%),
+    radial-gradient(54% 54% at 76% 30%, oklch(0.74 0.21 295), transparent 74%),
+    radial-gradient(56% 56% at 72% 78%, oklch(0.8 0.2 350), transparent 74%),
+    radial-gradient(52% 52% at 24% 76%, oklch(0.88 0.15 85), transparent 74%);
+  filter: blur(calc(var(--orb, 40px) * 0.07));
+}
+.zx-orb::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(120% 120% at 28% 16%, oklch(1 0 0 / 58%), oklch(1 0 0 / 0) 44%),
+    radial-gradient(100% 100% at 72% 92%, oklch(0.1 0.02 270 / 32%), transparent 62%);
+  box-shadow: inset 0 0 0 1px oklch(1 0 0 / 22%), inset 0 calc(var(--orb, 40px) * -0.1) calc(var(--orb, 40px) * 0.28) oklch(0 0 0 / 26%);
+}
+
+/* ---------------------------------------------------------------- 404 and error pages */
+.zx-system { display: grid; place-items: center; min-height: 100dvh; padding: 1.5rem; text-align: center; background: var(--zx-bg); color: var(--zx-text); font-family: var(--zx-font-ui); }
+.zx-system h1 { margin: 0; font: 500 clamp(2.5rem, 8vw, 4rem)/1 var(--zx-font-serif); letter-spacing: -0.03em; }
+.zx-system h2 { margin: 0.75rem 0 0; font: 500 1.375rem/1.25 var(--zx-font-serif); }
+.zx-system p { max-width: 24rem; margin: 0.625rem auto 0; color: var(--zx-text-2); font-size: 0.9375rem; line-height: 1.55; }
+.zx-system__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.625rem; margin-top: 1.75rem; }
+
+/* ---------------------------------------------------------------- monthly plans, promo code, renewal line */
+.zx-plans__note { margin: 0.875rem 0 0; color: var(--zx-text-3); font-size: 0.8125rem; line-height: 1.5; text-align: center; }
+.zx-plan__price span { white-space: nowrap; }
+.zx-promo { display: grid; gap: 0.5rem; width: 100%; max-width: 26rem; margin: 0 auto; text-align: left; }
+.zx-promo__label { color: var(--zx-text-2); font-size: 0.8125rem; font-weight: 500; }
+.zx-promo__row { display: flex; gap: 0.5rem; }
+.zx-promo__row .zx-field { flex: 1; min-width: 0; }
+.zx-paywall__promo { display: flex; justify-content: center; margin-top: 1.25rem; }
+.zx-plancard__renew { margin: 0.75rem 0 0; color: var(--zx-text-2); font-size: 0.875rem; line-height: 1.5; }
+.zx-plancard__actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.875rem; }

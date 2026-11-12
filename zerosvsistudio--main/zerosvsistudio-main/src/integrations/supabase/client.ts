@@ -1,0 +1,106 @@
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from './types';
+import { firebaseAuth } from '@/lib/firebase';
+
+function isNewSupabaseApiKey(value: string): boolean {
+  return value.startsWith('sb_publishable_') || value.startsWith('sb_secret_');
+}
+
+function createSupabaseFetch(supabaseKey: string): typeof fetch {
+  return (input, init) => {
+    const headers = new Headers(
+      typeof Request !== 'undefined' && input instanceof Request ? input.headers : undefined,
+    );
+
+    if (init?.headers) {
+      new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+    }
+
+    // New Supabase API keys are opaque strings, not bearer JWTs.
+    if (isNewSupabaseApiKey(supabaseKey) && headers.get('Authorization') === `Bearer ${supabaseKey}`) {
+      headers.delete('Authorization');
+    }
+
+    headers.set('apikey', supabaseKey);
+    return fetch(input, { ...init, headers });
+  };
+}
+
+function readEnv(names: string[]): string | undefined {
+  for (const name of names) {
+    try {
+      const viteVal = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.[name];
+      if (typeof viteVal === 'string' && viteVal.trim()) return viteVal.trim();
+    } catch {
+      /* SSR / non-vite */
+    }
+    try {
+      const nodeVal = typeof process !== 'undefined' ? process.env?.[name] : undefined;
+      if (typeof nodeVal === 'string' && nodeVal.trim()) return nodeVal.trim();
+    } catch {
+      /* no process */
+    }
+  }
+  return undefined;
+}
+
+function createSupabaseClient() {
+  const SUPABASE_URL = readEnv([
+    'VITE_SUPABASE_URL',
+    'SUPABASE_URL',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'PUBLIC_SUPABASE_URL',
+  ]);
+  const SUPABASE_PUBLISHABLE_KEY = readEnv([
+    'VITE_SUPABASE_PUBLISHABLE_KEY',
+    'SUPABASE_PUBLISHABLE_KEY',
+    'VITE_SUPABASE_ANON_KEY',
+    'SUPABASE_ANON_KEY',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'PUBLIC_SUPABASE_ANON_KEY',
+  ]);
+
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    const missing = [
+      ...(!SUPABASE_URL ? ['VITE_SUPABASE_URL / SUPABASE_URL'] : []),
+      ...(!SUPABASE_PUBLISHABLE_KEY ? ['VITE_SUPABASE_PUBLISHABLE_KEY / SUPABASE_PUBLISHABLE_KEY'] : []),
+    ];
+    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Set them in Cloudflare Pages → Settings → Environment variables (and rebuild).`;
+    console.error(`[Supabase] ${message}`);
+    throw new Error(message);
+  }
+
+  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    global: {
+      fetch: createSupabaseFetch(SUPABASE_PUBLISHABLE_KEY),
+    },
+    // Firebase is the source of truth for Google authentication.
+    // Always prefer a usable token so PostgREST never sees an expired JWT (PGRST301).
+    accessToken: async () => {
+      const user = firebaseAuth.currentUser;
+      if (!user) return null;
+      try {
+        return await user.getIdToken(false);
+      } catch {
+        try {
+          return await user.getIdToken(true);
+        } catch {
+          return null;
+        }
+      }
+    },
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
+
+let _supabase: ReturnType<typeof createSupabaseClient> | undefined;
+
+export const supabase = new Proxy({} as ReturnType<typeof createSupabaseClient>, {
+  get(_, prop, receiver) {
+    if (!_supabase) _supabase = createSupabaseClient();
+    return Reflect.get(_supabase, prop, receiver);
+  },
+});
